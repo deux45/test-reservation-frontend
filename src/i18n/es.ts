@@ -118,6 +118,13 @@ export const es = {
           reservations +
           ' reserva(s) futura(s) se mantienen: bloquear no cancela reservas.'
         : name + ' perdera el acceso de inmediato, incluida cualquier sesion abierta.',
+    editUser: 'Editar usuario',
+    edit: 'Editar',
+    passwordConfirm: 'Repetir contrasena',
+    passwordMismatch: 'Las contrasenas no coinciden.',
+    passwordTooShort: 'Minimo 10 caracteres.',
+    emailChangeWarning:
+      'El correo es la credencial de acceso: al cambiarlo, esta persona tendra que entrar con el nuevo.',
     passwordHint: 'Minimo 10 caracteres.',
     emptyTitle: 'No hay usuarios',
     emptyBody: 'Se dan de alta desde la pantalla de acceso.',

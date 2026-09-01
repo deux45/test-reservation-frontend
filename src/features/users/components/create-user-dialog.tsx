@@ -16,7 +16,13 @@ import { toUserMessage } from '@/lib/api/errors';
 import type { UserRole } from '@/lib/api/types';
 import { usersApi } from '../api/users.api';
 
-const EMPTY = { email: '', name: '', password: '', role: 'user' as UserRole };
+const EMPTY = {
+  email: '',
+  name: '',
+  password: '',
+  passwordConfirm: '',
+  role: 'user' as UserRole,
+};
 
 /** Mirrors the API, which mirrors Better Auth's minPasswordLength. */
 const MIN_PASSWORD = 10;
@@ -25,21 +31,40 @@ export function CreateUserDialog({ open, onClose }: { open: boolean; onClose: ()
   const queryClient = useQueryClient();
   const [fields, setFields] = useState(EMPTY);
 
-  // Cleared on each opening, so reopening never shows the previous attempt --
+  // Cleared on every opening, so reopening never shows the previous attempt --
   // which for a password field would be a small but real leak.
   useEffect(() => {
     if (open) setFields(EMPTY);
   }, [open]);
 
   const create = useMutation({
-    mutationFn: () => usersApi.create(fields),
+    mutationFn: () =>
+      // passwordConfirm never leaves the browser: it exists to catch a typo,
+      // and the server has no use for it.
+      usersApi.create({
+        email: fields.email,
+        name: fields.name,
+        password: fields.password,
+        role: fields.role,
+      }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['users'] });
       onClose();
     },
   });
 
-  const passwordTooShort = fields.password.length > 0 && fields.password.length < MIN_PASSWORD;
+  const tooShort = fields.password.length > 0 && fields.password.length < MIN_PASSWORD;
+
+  // Only flagged once the confirmation has been typed into. Complaining while
+  // someone is still typing the second field is noise, not help.
+  const mismatch = fields.passwordConfirm.length > 0 && fields.password !== fields.passwordConfirm;
+
+  const canSave =
+    !create.isPending &&
+    Boolean(fields.name) &&
+    Boolean(fields.email) &&
+    fields.password.length >= MIN_PASSWORD &&
+    fields.password === fields.passwordConfirm;
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
@@ -68,9 +93,20 @@ export function CreateUserDialog({ open, onClose }: { open: boolean; onClose: ()
             label={es.auth.password}
             value={fields.password}
             autoComplete="new-password"
-            error={passwordTooShort}
-            helperText={es.users.passwordHint}
+            error={tooShort}
+            helperText={tooShort ? es.users.passwordTooShort : es.users.passwordHint}
             onChange={(event) => setFields({ ...fields, password: event.target.value })}
+          />
+
+          <TextField
+            size="small"
+            type="password"
+            label={es.users.passwordConfirm}
+            value={fields.passwordConfirm}
+            autoComplete="new-password"
+            error={mismatch}
+            helperText={mismatch ? es.users.passwordMismatch : undefined}
+            onChange={(event) => setFields({ ...fields, passwordConfirm: event.target.value })}
           />
 
           <TextField
@@ -90,16 +126,7 @@ export function CreateUserDialog({ open, onClose }: { open: boolean; onClose: ()
 
       <DialogActions sx={{ px: 3, pb: 2 }}>
         <Button onClick={onClose}>{es.common.cancel}</Button>
-        <Button
-          variant="contained"
-          disabled={
-            create.isPending ||
-            !fields.name ||
-            !fields.email ||
-            fields.password.length < MIN_PASSWORD
-          }
-          onClick={() => create.mutate()}
-        >
+        <Button variant="contained" disabled={!canSave} onClick={() => create.mutate()}>
           {es.common.save}
         </Button>
       </DialogActions>

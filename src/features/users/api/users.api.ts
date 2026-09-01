@@ -10,6 +10,11 @@ export const usersApi = {
     return api('/api/v1/users', { method: 'POST', body: JSON.stringify(input) });
   },
 
+  /** Name and email. The role has its own route, because it has its own rule. */
+  update(id: string, input: { name?: string; email?: string }): Promise<User> {
+    return api(`/api/v1/users/${id}`, { method: 'PATCH', body: JSON.stringify(input) });
+  },
+
   updateRole(id: string, role: UserRole): Promise<User> {
     return api(`/api/v1/users/${id}/role`, {
       method: 'PATCH',

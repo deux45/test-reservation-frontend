@@ -24,12 +24,14 @@ import { monoFontFamily } from '@/theme/theme';
 import { usersApi } from '../api/users.api';
 import { BanUserDialog } from './ban-user-dialog';
 import { CreateUserDialog } from './create-user-dialog';
+import { EditUserDialog } from './edit-user-dialog';
 
 export function UsersTable() {
   const queryClient = useQueryClient();
   const { data: session } = useSession();
 
   const [creating, setCreating] = useState(false);
+  const [editing, setEditing] = useState<User | null>(null);
   const [banning, setBanning] = useState<User | null>(null);
 
   const { data, isPending, error } = useQuery({
@@ -138,6 +140,9 @@ export function UsersTable() {
                     </TextField>
                   </TableCell>
                   <TableCell align="right">
+                    <Button size="small" onClick={() => setEditing(user)}>
+                      {es.users.edit}
+                    </Button>
                     {user.banned ? (
                       <Button size="small" disabled={busy} onClick={() => unban.mutate(user.id)}>
                         {es.users.unban}
@@ -161,6 +166,7 @@ export function UsersTable() {
       </Paper>
 
       <CreateUserDialog open={creating} onClose={() => setCreating(false)} />
+      <EditUserDialog user={editing} onClose={() => setEditing(null)} />
       <BanUserDialog user={banning} onClose={() => setBanning(null)} />
 
       <Typography sx={{ fontFamily: monoFontFamily, fontSize: 12, color: 'text.secondary' }}>
