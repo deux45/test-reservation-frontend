@@ -1,0 +1,58 @@
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: '/'
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+
+    # Aligned with `min-release-age=7` in .npmrc.
+    cooldown:
+      default-days: 7
+
+    commit-message:
+      prefix: 'build'
+      prefix-development: 'build'
+      include: scope
+
+    groups:
+      next:
+        patterns: ['next', 'eslint-config-next', '@next/*']
+      react:
+        patterns: ['react', 'react-dom', '@types/react', '@types/react-dom']
+      mui:
+        patterns: ['@mui/*', '@emotion/*']
+      testing:
+        patterns: ['vitest', '@vitest/*', '@vitejs/*', '@testing-library/*', 'msw', 'jsdom', '@playwright/test']
+      linting:
+        patterns: ['eslint', 'eslint-*', '@eslint/*', 'prettier', 'typescript-eslint']
+
+    ignore:
+      # `better-auth` must stay byte-identical to the API's version: client and
+      # server share inferred types and the session format. It is upgraded by
+      # hand, in both repositories, in the same change.
+      - dependency-name: 'better-auth'
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+
+  - package-ecosystem: github-actions
+    directory: '/'
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: 'ci'
+      include: scope
+
+  - package-ecosystem: docker
+    directory: '/'
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: 'build'
+      include: scope
