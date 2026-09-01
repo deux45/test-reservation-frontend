@@ -1,0 +1,30 @@
+name: reservations-web-prod
+
+services:
+  web:
+    image: ghcr.io/${GITHUB_REPOSITORY:-local}/reservations-web:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: ['no-new-privileges:true']
+    cap_drop: [ALL]
+    environment:
+      NODE_ENV: production
+      # NOTE: NEXT_PUBLIC_API_URL is absent on purpose. It is compiled into the
+      # browser bundle at build time, so setting it here would change nothing.
+      # It is passed as a build-arg by .github/workflows/release.yml, which
+      # makes the image environment-specific by construction.
+      PORT: '3001'
+    ports:
+      - '3001:3001'
+    logging:
+      driver: json-file
+      options: { max-size: '10m', max-file: '3' }
+    deploy:
+      resources:
+        limits: { cpus: '0.5', memory: 256M }
+
+networks:
+  default:
+    name: reservations-net
+    external: true

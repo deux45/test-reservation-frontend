@@ -1,0 +1,24 @@
+name: reservations-web-dev
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: http://localhost:3000
+    ports:
+      - '3001:3001'
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+      - /app/node_modules
+      - /app/.next
+
+networks:
+  default:
+    # Created by the API repo's compose. Start that one first:
+    #   cd ../test-reservation-backend && docker compose up -d
+    name: reservations-net
+    external: true
