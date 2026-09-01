@@ -23,6 +23,7 @@ import { formatRange } from '@/lib/dates';
 import { monoFontFamily } from '@/theme/theme';
 import { resourcesApi } from '@/features/resources/api/resources.api';
 import { reservationsApi } from '../api/reservations.api';
+import { BookingDialog } from './booking-dialog';
 import { StatusChip } from './status-chip';
 
 const ALL = 'all';
@@ -34,6 +35,7 @@ export function ReservationsTable() {
   const [status, setStatus] = useState<string>(ALL);
   const [from, setFrom] = useState<string>('');
   const [to, setTo] = useState<string>('');
+  const [booking, setBooking] = useState(false);
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
 
@@ -130,6 +132,10 @@ export function ReservationsTable() {
           onChange={(event) => resetPage(setTo)(event.target.value)}
           slotProps={{ inputLabel: { shrink: true } }}
         />
+
+        <Button variant="contained" sx={{ ml: 'auto' }} onClick={() => setBooking(true)}>
+          {es.reservations.newReservation}
+        </Button>
       </Paper>
 
       {error && <Alert severity="error">{toUserMessage(error)}</Alert>}
@@ -220,6 +226,8 @@ export function ReservationsTable() {
           labelDisplayedRows={({ from: a, to: b, count }) => `${a}–${b} ${es.common.of} ${count}`}
         />
       </Paper>
+
+      <BookingDialog open={booking} onClose={() => setBooking(false)} />
 
       <Typography sx={{ fontFamily: monoFontFamily, fontSize: 12, color: 'text.secondary' }}>
         GET /api/v1/reservations?resourceId=&amp;status=&amp;from=&amp;to=&amp;page=&amp;limit= ·

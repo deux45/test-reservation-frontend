@@ -57,7 +57,11 @@ export const es = {
 
   reservations: {
     title: 'Reservas',
-    newReservation: 'Reservar',
+    newReservation: 'Nueva reserva',
+    date: 'Fecha',
+    endExclusive: 'La hora de fin no se ocupa.',
+    timeZoneNote: (zone: string) =>
+      'Las horas se interpretan en la zona del recurso (' + zone + ').',
     reservationTitle: 'Título',
     resource: 'Recurso',
     from: 'Desde',
@@ -131,7 +135,8 @@ export const es = {
     // The 409 the whole system exists to produce. The API sends the exact
     // conflicting range, so the message can be specific instead of "error".
     overlap: 'Ese horario ya está reservado',
-    overlapDetail: (from: string, to: string) => `El recurso está ocupado de ${from} a ${to}.`,
+    overlapDetail: (range: string, resource: string) =>
+      resource + ' ya está reservada de ' + range + '. Elige otro horario.',
     outsideHours: 'El recurso no está disponible a esa hora.',
     resourceBlocked: 'El recurso está bloqueado en ese periodo.',
     capacityExceeded: 'El número de asistentes supera la capacidad del recurso.',
