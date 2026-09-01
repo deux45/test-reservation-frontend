@@ -3,6 +3,7 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
+import { roboto, robotoMono } from '@/theme/fonts';
 import { theme } from '@/theme/theme';
 import { QueryProvider } from './query-provider';
 import { es } from '@/i18n/es';
@@ -14,7 +15,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" suppressHydrationWarning>
+    <html
+      lang="es"
+      className={`${roboto.variable} ${robotoMono.variable}`}
+      suppressHydrationWarning
+    >
       <body>
         {/* Sets the colour scheme before first paint, so a dark-mode user
             never sees a white flash that then corrects itself. */}
