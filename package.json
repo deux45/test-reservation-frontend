@@ -1,0 +1,90 @@
+{
+  "name": "reservations-web",
+  "version": "0.1.0",
+  "description": "Shared resource booking web client — Next.js + React + MUI",
+  "license": "UNLICENSED",
+  "private": true,
+  "engines": {
+    "node": ">=24",
+    "npm": ">=11.10.0"
+  },
+  "scripts": {
+    "dev": "next dev --port 3001",
+    "build": "next build",
+    "start": "next start --port 3001",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --fix",
+    "lint:check": "eslint . --max-warnings=0",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:cov": "vitest run --coverage",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "api:types": "openapi-typescript ../test-reservation-backend/openapi.json -o src/lib/api/schema.d.ts",
+    "audit:signatures": "npm audit signatures",
+    "audit:vulns": "npm audit --audit-level=high",
+    "release": "commit-and-tag-version",
+    "release:dry": "commit-and-tag-version --dry-run",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@date-fns/tz": "1.5.0",
+    "@emotion/cache": "11.14.0",
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.1",
+    "@hookform/resolvers": "5.9.1",
+    "@mui/material": "9.3.1",
+    "@mui/material-nextjs": "9.3.0",
+    "@mui/x-data-grid": "9.12.0",
+    "@mui/x-date-pickers": "9.12.0",
+    "@tanstack/react-query": "5.102.3",
+    "better-auth": "1.7.1",
+    "date-fns": "4.4.0",
+    "next": "16.3.2",
+    "openapi-fetch": "0.17.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-hook-form": "7.86.0",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "21.2.2",
+    "@commitlint/config-conventional": "21.2.2",
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.62.1",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.2",
+    "@testing-library/user-event": "14.6.6",
+    "@types/node": "26.3.0",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.4",
+    "@vitejs/plugin-react": "6.1.0",
+    "@vitest/coverage-v8": "4.1.11",
+    "commit-and-tag-version": "13.1.2",
+    "eslint": "10.9.1",
+    "eslint-config-next": "16.3.2",
+    "eslint-config-prettier": "10.1.8",
+    "globals": "17.11.0",
+    "husky": "9.1.7",
+    "jsdom": "30.0.1",
+    "lint-staged": "17.3.0",
+    "msw": "2.15.0",
+    "openapi-typescript": "7.13.0",
+    "prettier": "3.9.6",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.68.0",
+    "vitest": "4.1.11"
+  },
+  "//typescript": "5.9.3, not 6.x as in the API repo: openapi-typescript declares peer typescript ^5.x and imports the compiler directly. The API needs 6.x because `nest build` calls the programmatic compiler API, which TypeScript 7 removed. Revisit when openapi-typescript supports 6.",
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix --max-warnings=0",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml,css}": [
+      "prettier --write"
+    ]
+  }
+}

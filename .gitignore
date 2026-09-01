@@ -1,0 +1,30 @@
+node_modules/
+.next/
+out/
+build/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+.env
+.env.*
+!.env.example
+
+# Generated from the API's OpenAPI document by `npm run api:types`.
+# Committed on purpose: CI diffs it against a fresh generation to catch a
+# contract that drifted from the backend.
+!src/lib/api/schema.d.ts
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+NOTES.md
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
