@@ -19,7 +19,7 @@ import { useState } from 'react';
 import { es } from '@/i18n/es';
 import { toUserMessage } from '@/lib/api/errors';
 import type { ReservationStatus } from '@/lib/api/types';
-import { formatRange } from '@/lib/dates';
+import { formatDate, formatRange } from '@/lib/dates';
 import { monoFontFamily } from '@/theme/theme';
 import { resourcesApi } from '@/features/resources/api/resources.api';
 import { reservationsApi } from '../api/reservations.api';
@@ -147,6 +147,7 @@ export function ReservationsTable() {
             <TableRow>
               <TableCell>{es.reservations.resource}</TableCell>
               <TableCell>{es.reservations.reservationTitle}</TableCell>
+              <TableCell>{es.reservations.date}</TableCell>
               <TableCell>{es.reservations.range}</TableCell>
               <TableCell>{es.reservations.filterStatus}</TableCell>
               <TableCell align="right" />
@@ -157,7 +158,7 @@ export function ReservationsTable() {
             {isPending &&
               Array.from({ length: 5 }, (_, row) => (
                 <TableRow key={row}>
-                  {Array.from({ length: 5 }, (_cell, index) => (
+                  {Array.from({ length: 6 }, (_cell, index) => (
                     <TableCell key={index}>
                       <Skeleton />
                     </TableCell>
@@ -167,7 +168,7 @@ export function ReservationsTable() {
 
             {data?.data.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5}>
+                <TableCell colSpan={6}>
                   <Box sx={{ py: 4, textAlign: 'center' }}>
                     <Typography sx={{ fontWeight: 500 }}>{es.reservations.emptyTitle}</Typography>
                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>
@@ -187,6 +188,11 @@ export function ReservationsTable() {
                 <TableRow key={reservation.id} hover>
                   <TableCell>{reservation.resource?.name ?? '—'}</TableCell>
                   <TableCell sx={{ color: 'text.secondary' }}>{reservation.title}</TableCell>
+                  <TableCell
+                    sx={{ fontFamily: monoFontFamily, fontSize: 13, color: 'text.secondary' }}
+                  >
+                    {formatDate(reservation.startAt, timeZone)}
+                  </TableCell>
                   <TableCell
                     sx={{ fontFamily: monoFontFamily, fontSize: 13, color: 'text.secondary' }}
                   >
