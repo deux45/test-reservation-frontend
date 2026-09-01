@@ -118,6 +118,13 @@ export interface User {
   createdAt: string;
 }
 
+export interface CreateUserInput {
+  email: string;
+  password: string;
+  name: string;
+  role?: UserRole;
+}
+
 export interface CurrentUser {
   id: string;
   email: string;

@@ -101,6 +101,24 @@ export const es = {
     activeReservations: 'Reservas activas',
     roleAdmin: 'Administrador',
     roleUser: 'Usuario',
+    newUser: 'Nuevo usuario',
+    status: 'Estado',
+    enabled: 'Activo',
+    blocked: 'Bloqueado',
+    ban: 'Bloquear',
+    unban: 'Desbloquear',
+    banTitle: 'Bloquear usuario',
+    banReason: 'Motivo',
+    banDays: 'Duracion en dias',
+    banDaysHint: 'Vacio = bloqueo indefinido.',
+    banWarning: (name: string, reservations: number) =>
+      reservations > 0
+        ? name +
+          ' perdera el acceso de inmediato. Sus ' +
+          reservations +
+          ' reserva(s) futura(s) se mantienen: bloquear no cancela reservas.'
+        : name + ' perdera el acceso de inmediato, incluida cualquier sesion abierta.',
+    passwordHint: 'Minimo 10 caracteres.',
     emptyTitle: 'No hay usuarios',
     emptyBody: 'Se dan de alta desde la pantalla de acceso.',
   },
