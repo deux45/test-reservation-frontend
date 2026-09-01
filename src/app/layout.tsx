@@ -18,9 +18,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="es"
       className={`${roboto.variable} ${robotoMono.variable}`}
+      // MUI's colour-scheme script stamps an attribute on <html> before React
+      // hydrates, which is a mismatch by construction.
       suppressHydrationWarning
     >
-      <body>
+      {/*
+        Browser extensions inject attributes into <body> before React runs --
+        ColorZilla adds cz-shortcut-listen, Grammarly adds data-gr-*, and so
+        on. The result is a hydration warning caused by the visitor's browser
+        rather than by this application, and nothing here can prevent it.
+
+        This suppression applies ONLY to <body>'s own attributes; a genuine
+        mismatch anywhere inside still reports normally, so it silences the
+        noise without hiding a real bug.
+      */}
+      <body suppressHydrationWarning>
         {/* Sets the colour scheme before first paint, so a dark-mode user
             never sees a white flash that then corrects itself. */}
         <InitColorSchemeScript attribute="data-mui-color-scheme" />
