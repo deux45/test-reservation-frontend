@@ -22,6 +22,7 @@ export default {
         'schedule',
         'auth',
         'theme',
+        'shell',
         'i18n',
         'api',
         'common',

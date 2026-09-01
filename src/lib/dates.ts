@@ -27,7 +27,7 @@ export function formatDate(value: Date | string, timeZone: string): string {
 
 /** `15 sep 2026, 10:00` in the given zone. */
 export function formatDateTime(value: Date | string, timeZone: string): string {
-  return format(new TZDate(new Date(value), timeZone), "d MMM yyyy, HH:mm", { locale: esLocale });
+  return format(new TZDate(new Date(value), timeZone), 'd MMM yyyy, HH:mm', { locale: esLocale });
 }
 
 /**
