@@ -14,12 +14,18 @@ export const es = {
   nav: {
     resources: 'Recursos',
     reservations: 'Reservas',
+    availability: 'Disponibilidad',
     schedule: 'Agenda',
     signOut: 'Cerrar sesión',
   },
 
   auth: {
     signInTitle: 'Iniciar sesión',
+    signingIn: 'Entrando…',
+    signOut: 'Salir',
+    // The mockup said 'token JWT'. This system uses a Better Auth session
+    // cookie instead, so the copy says what actually happens.
+    hint: 'La sesión viaja en una cookie firmada, no en un token en localStorage. El rol (admin o user) llega en la propia sesión.',
     email: 'Correo electrónico',
     password: 'Contraseña',
     signIn: 'Entrar',
@@ -38,6 +44,8 @@ export const es = {
     status: 'Estado',
     active: 'Activo',
     inactive: 'Dado de baja',
+    deactivate: 'Dar de baja',
+    activate: 'Reactivar',
     searchPlaceholder: 'Buscar por nombre o código',
     emptyTitle: 'Todavía no hay recursos',
     emptyBody: 'Crea el primero para empezar a reservar.',
@@ -60,6 +68,12 @@ export const es = {
     statusConfirmed: 'Confirmada',
     statusCancelled: 'Cancelada',
     statusCompleted: 'Completada',
+    user: 'Usuario',
+    range: 'Rango',
+    all: 'Todas',
+    filterResource: 'Recurso',
+    filterStatus: 'Estado',
+    rowsPerPage: 'Filas por página',
     emptyTitle: 'No hay reservas con esos filtros',
     emptyBody: 'Prueba a ampliar el rango de fechas o a quitar algún filtro.',
   },
