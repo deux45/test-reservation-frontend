@@ -48,7 +48,6 @@ export const es = {
     editResource: 'Editar recurso',
     code: 'Código',
     codeHint: 'Identificador estable. Minúsculas, números y guiones. No se puede cambiar después.',
-    timeZone: 'Zona horaria',
     description: 'Descripción',
     attributesHint: 'Atributos propios de este tipo de recurso.',
     edit: 'Editar',

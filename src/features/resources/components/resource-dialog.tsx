@@ -25,7 +25,15 @@ interface Props {
   resource?: Resource;
 }
 
-const EMPTY = { code: '', name: '', description: '', capacity: '', location: '', timeZone: 'UTC' };
+/**
+ * The resource's time zone is not edited here.
+ *
+ * It still exists on the resource and still matters -- operating hours are
+ * wall-clock in it, and the reservations table renders every time in it -- but
+ * asking for an IANA identifier in a free-text field asks the wrong person the
+ * wrong question. New resources take the API's default, UTC.
+ */
+const EMPTY = { code: '', name: '', description: '', capacity: '', location: '' };
 
 export function ResourceDialog({ open, onClose, resource }: Props) {
   const queryClient = useQueryClient();
@@ -56,7 +64,6 @@ export function ResourceDialog({ open, onClose, resource }: Props) {
             description: resource.description ?? '',
             capacity: resource.capacity?.toString() ?? '',
             location: resource.location ?? '',
-            timeZone: resource.timeZone,
           }
         : EMPTY,
     );
@@ -71,7 +78,6 @@ export function ResourceDialog({ open, onClose, resource }: Props) {
         description: fields.description || undefined,
         capacity: fields.capacity ? Number(fields.capacity) : undefined,
         location: fields.location || undefined,
-        timeZone: fields.timeZone,
         attributes,
       };
 
@@ -137,24 +143,13 @@ export function ResourceDialog({ open, onClose, resource }: Props) {
             onChange={(event) => setFields({ ...fields, name: event.target.value })}
           />
 
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <TextField
-              size="small"
-              type="number"
-              label={es.resources.capacity}
-              value={fields.capacity}
-              sx={{ flex: 1 }}
-              onChange={(event) => setFields({ ...fields, capacity: event.target.value })}
-            />
-            <TextField
-              size="small"
-              label={es.resources.timeZone}
-              value={fields.timeZone}
-              sx={{ flex: 1 }}
-              helperText="Europe/Madrid"
-              onChange={(event) => setFields({ ...fields, timeZone: event.target.value })}
-            />
-          </Box>
+          <TextField
+            size="small"
+            type="number"
+            label={es.resources.capacity}
+            value={fields.capacity}
+            onChange={(event) => setFields({ ...fields, capacity: event.target.value })}
+          />
 
           <TextField
             size="small"
