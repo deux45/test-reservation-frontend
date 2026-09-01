@@ -33,7 +33,7 @@ interface Props {
  * asking for an IANA identifier in a free-text field asks the wrong person the
  * wrong question. New resources take the API's default, UTC.
  */
-const EMPTY = { code: '', name: '', description: '', capacity: '', location: '' };
+const EMPTY = { code: '', name: '', description: '', location: '' };
 
 export function ResourceDialog({ open, onClose, resource }: Props) {
   const queryClient = useQueryClient();
@@ -62,7 +62,6 @@ export function ResourceDialog({ open, onClose, resource }: Props) {
             code: resource.code,
             name: resource.name,
             description: resource.description ?? '',
-            capacity: resource.capacity?.toString() ?? '',
             location: resource.location ?? '',
           }
         : EMPTY,
@@ -76,7 +75,6 @@ export function ResourceDialog({ open, onClose, resource }: Props) {
       const payload = {
         name: fields.name,
         description: fields.description || undefined,
-        capacity: fields.capacity ? Number(fields.capacity) : undefined,
         location: fields.location || undefined,
         attributes,
       };
@@ -141,14 +139,6 @@ export function ResourceDialog({ open, onClose, resource }: Props) {
             label={es.resources.name}
             value={fields.name}
             onChange={(event) => setFields({ ...fields, name: event.target.value })}
-          />
-
-          <TextField
-            size="small"
-            type="number"
-            label={es.resources.capacity}
-            value={fields.capacity}
-            onChange={(event) => setFields({ ...fields, capacity: event.target.value })}
           />
 
           <TextField

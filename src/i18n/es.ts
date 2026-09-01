@@ -39,7 +39,6 @@ export const es = {
     newResource: 'Nuevo recurso',
     name: 'Nombre',
     type: 'Tipo',
-    capacity: 'Capacidad',
     location: 'Ubicación',
     status: 'Estado',
     active: 'Activo',

@@ -21,13 +21,7 @@ import { es } from '@/i18n/es';
 import { toUserMessage } from '@/lib/api/errors';
 import { monoFontFamily } from '@/theme/theme';
 
-const COLUMNS = [
-  es.resources.name,
-  es.resources.type,
-  es.resources.capacity,
-  es.resources.status,
-  '',
-];
+const COLUMNS = [es.resources.name, es.resources.type, es.resources.status, ''];
 
 export function ResourcesTable() {
   const queryClient = useQueryClient();
@@ -116,7 +110,6 @@ export function ResourcesTable() {
                 <TableCell sx={{ color: 'text.secondary' }}>
                   {resource.resourceType?.name ?? '—'}
                 </TableCell>
-                <TableCell sx={{ color: 'text.secondary' }}>{resource.capacity ?? '—'}</TableCell>
                 <TableCell>
                   <Chip
                     size="small"
