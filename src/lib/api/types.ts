@@ -75,6 +75,16 @@ export interface CreateResourceInput {
  *  either, because both would invalidate the stored attributes. */
 export type UpdateResourceInput = Omit<CreateResourceInput, 'code' | 'resourceTypeId'>;
 
+export interface AvailabilitySlot {
+  /** UTC, inclusive. */
+  startAt: string;
+  /** UTC, **exclusive**. */
+  endAt: string;
+  durationMinutes: number;
+  /** The zone the slot should be rendered in. */
+  timeZone: string;
+}
+
 export interface CreateReservationInput {
   resourceId: string;
   title: string;

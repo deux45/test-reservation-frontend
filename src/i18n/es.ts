@@ -89,6 +89,8 @@ export const es = {
   availability: {
     title: 'Disponibilidad',
     freeSlots: 'Horarios disponibles',
+    pickHint: 'Pulsa un horario para rellenar las horas.',
+    loading: 'Buscando horarios libres…',
     otherSlots: 'Otros horarios disponibles',
     noSlots: 'No quedan horarios libres ese día.',
     pickSlot: 'Elige un horario',

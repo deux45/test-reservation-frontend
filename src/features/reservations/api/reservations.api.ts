@@ -1,5 +1,6 @@
 import { api } from '@/lib/api/client';
 import type {
+  AvailabilitySlot,
   CreateReservationInput,
   Paginated,
   Reservation,
@@ -9,6 +10,23 @@ import type {
 export const reservationsApi = {
   list(filters: ReservationFilters = {}): Promise<Paginated<Reservation>> {
     return api(`/api/v1/reservations${toQuery(filters)}`);
+  },
+
+  /**
+   * Free slots for a resource on one day.
+   *
+   * Offering these beats asking someone to guess a time and then telling them
+   * it is taken: most conflicts stop existing rather than being reported.
+   */
+  availability(resourceId: string, from: string, to: string, minDurationMinutes = 15) {
+    const query = new URLSearchParams({
+      from,
+      to,
+      minDurationMinutes: String(minDurationMinutes),
+    });
+    return api<AvailabilitySlot[]>(
+      `/api/v1/resources/${resourceId}/availability?${query.toString()}`,
+    );
   },
 
   get(id: string): Promise<Reservation> {

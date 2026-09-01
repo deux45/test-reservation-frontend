@@ -18,6 +18,7 @@ import { extractConflict, isOverlapConflict, toUserMessage } from '@/lib/api/err
 import { formatRange, isForeignTimeZone, wallClockToUtc } from '@/lib/dates';
 import { resourcesApi } from '@/features/resources/api/resources.api';
 import { reservationsApi } from '../api/reservations.api';
+import { FreeSlots } from './free-slots';
 
 /** Matches the Period value object on the API. */
 const SLOT_SECONDS = 15 * 60;
@@ -71,6 +72,12 @@ export function BookingDialog({ open, onClose }: { open: boolean; onClose: () =>
       void queryClient.invalidateQueries({ queryKey: ['availability'] });
       onClose();
     },
+    onError: () => {
+      // A 409 means someone booked between the moment the slots were listed
+      // and this submit, so the chips on screen are now a lie. Refetching them
+      // turns the error into a next step: the alternatives are already there.
+      void queryClient.invalidateQueries({ queryKey: ['availability'] });
+    },
   });
 
   // The one error worth handling specially. The API returns the exact range
@@ -116,6 +123,13 @@ export function BookingDialog({ open, onClose }: { open: boolean; onClose: () =>
             value={fields.date}
             slotProps={{ inputLabel: { shrink: true } }}
             onChange={(event) => set('date')(event.target.value)}
+          />
+
+          <FreeSlots
+            resourceId={fields.resourceId}
+            date={fields.date}
+            timeZone={timeZone}
+            onPick={(from, to) => setFields((current) => ({ ...current, from, to }))}
           />
 
           <Box sx={{ display: 'flex', gap: 2 }}>
