@@ -10,6 +10,36 @@ import { es as esLocale } from 'date-fns/locale';
  * ends up showing three different times for the same reservation.
  */
 
+/**
+ * Turns a wall-clock date and time in a given zone into the UTC instant the
+ * API expects.
+ *
+ * This is the direction that gets written wrong. `new Date('2026-09-15T10:00')`
+ * interprets the string in the BROWSER's zone, so booking a Madrid room from a
+ * laptop set to Bogotá would silently land six hours out. TZDate's component
+ * constructor is explicit about which zone the wall clock belongs to.
+ *
+ * @param date `2026-09-15`, as an <input type="date"> produces it
+ * @param time `10:00`, as an <input type="time"> produces it
+ */
+export function wallClockToUtc(date: string, time: string, timeZone: string): string {
+  const [year, month, day] = date.split('-').map(Number);
+  const [hours, minutes] = time.split(':').map(Number);
+
+  const instant = new TZDate(
+    year!,
+    month! - 1, // TZDate takes a zero-based month, like Date
+    day!,
+    hours!,
+    minutes!,
+    0,
+    0,
+    timeZone,
+  );
+
+  return new Date(instant.getTime()).toISOString();
+}
+
 /** The viewer's own zone, used when a resource has none. */
 export function browserTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;

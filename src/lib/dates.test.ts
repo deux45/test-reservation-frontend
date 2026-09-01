@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatRange, formatTime, isForeignTimeZone } from './dates';
+import { formatRange, formatTime, isForeignTimeZone, wallClockToUtc } from './dates';
 
 /**
  * These tests only mean anything with TZ pinned to UTC (see vitest.config.ts).
@@ -33,5 +33,30 @@ describe('dates', () => {
   it('detects a resource in a different zone than the viewer', () => {
     expect(isForeignTimeZone('UTC')).toBe(false); // TZ is pinned to UTC
     expect(isForeignTimeZone('Asia/Tokyo')).toBe(true);
+  });
+});
+
+describe('wallClockToUtc', () => {
+  it('reads the wall clock in the resource zone, not the browser', () => {
+    // 10:00 in Madrid in September is CEST (+2), so 08:00 UTC. If this used
+    // `new Date('2026-09-15T10:00')` it would return 10:00Z under the pinned
+    // TZ=UTC and quietly shift by two hours for a real user.
+    expect(wallClockToUtc('2026-09-15', '10:00', 'Europe/Madrid')).toBe('2026-09-15T08:00:00.000Z');
+  });
+
+  it('follows the same zone across a daylight saving change', () => {
+    // December is CET (+1). The same wall clock is a different instant.
+    expect(wallClockToUtc('2026-12-15', '10:00', 'Europe/Madrid')).toBe('2026-12-15T09:00:00.000Z');
+  });
+
+  it('handles a zone behind UTC', () => {
+    expect(wallClockToUtc('2026-09-15', '10:00', 'America/Bogota')).toBe(
+      '2026-09-15T15:00:00.000Z',
+    );
+  });
+
+  it('is the inverse of formatTime', () => {
+    const utc = wallClockToUtc('2026-09-15', '14:30', 'Europe/Madrid');
+    expect(formatTime(utc, 'Europe/Madrid')).toBe('14:30');
   });
 });
