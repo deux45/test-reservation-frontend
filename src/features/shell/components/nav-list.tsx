@@ -26,6 +26,12 @@ export const SECTIONS: Section[] = [
     endpoint: 'GET /api/v1/reservations',
     icon: '◷',
   },
+  {
+    href: '/users',
+    label: es.users.title,
+    endpoint: 'GET /api/v1/users',
+    icon: '☖',
+  },
 ];
 
 /**

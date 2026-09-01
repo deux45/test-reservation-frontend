@@ -21,6 +21,7 @@ export default {
         'availability',
         'schedule',
         'auth',
+        'users',
         'theme',
         'shell',
         'i18n',
