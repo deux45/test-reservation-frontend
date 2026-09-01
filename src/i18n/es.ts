@@ -45,6 +45,13 @@ export const es = {
     active: 'Activo',
     inactive: 'Dado de baja',
     deactivate: 'Dar de baja',
+    editResource: 'Editar recurso',
+    code: 'Código',
+    codeHint: 'Identificador estable. Minúsculas, números y guiones. No se puede cambiar después.',
+    timeZone: 'Zona horaria',
+    description: 'Descripción',
+    attributesHint: 'Atributos propios de este tipo de recurso.',
+    edit: 'Editar',
     activate: 'Reactivar',
     searchPlaceholder: 'Buscar por nombre o código',
     emptyTitle: 'Todavía no hay recursos',
@@ -84,6 +91,18 @@ export const es = {
     otherSlots: 'Otros horarios disponibles',
     noSlots: 'No quedan horarios libres ese día.',
     pickSlot: 'Elige un horario',
+  },
+
+  users: {
+    title: 'Usuarios',
+    name: 'Nombre',
+    email: 'Correo',
+    role: 'Rol',
+    activeReservations: 'Reservas activas',
+    roleAdmin: 'Administrador',
+    roleUser: 'Usuario',
+    emptyTitle: 'No hay usuarios',
+    emptyBody: 'Se dan de alta desde la pantalla de acceso.',
   },
 
   errors: {

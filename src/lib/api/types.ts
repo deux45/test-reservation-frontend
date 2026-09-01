@@ -63,6 +63,21 @@ export interface Reservation {
   createdAt: string;
 }
 
+export interface CreateResourceInput {
+  resourceTypeId: string;
+  code: string;
+  name: string;
+  description?: string;
+  capacity?: number;
+  location?: string;
+  timeZone?: string;
+  attributes?: Record<string, unknown>;
+}
+
+/** code and resourceTypeId are absent on purpose: the API refuses to change
+ *  either, because both would invalidate the stored attributes. */
+export type UpdateResourceInput = Omit<CreateResourceInput, 'code' | 'resourceTypeId'>;
+
 export interface CreateReservationInput {
   resourceId: string;
   title: string;
@@ -87,6 +102,20 @@ export interface ResourceFilters {
   isActive?: boolean;
   page?: number;
   limit?: number;
+}
+
+export type UserRole = 'admin' | 'user';
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  emailVerified: boolean;
+  banned: boolean;
+  /** Future confirmed reservations, so the impact of a role change is visible. */
+  activeReservations: number;
+  createdAt: string;
 }
 
 export interface CurrentUser {

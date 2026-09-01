@@ -1,5 +1,12 @@
 import { api } from '@/lib/api/client';
-import type { Paginated, Resource, ResourceFilters, ResourceType } from '@/lib/api/types';
+import type {
+  CreateResourceInput,
+  Paginated,
+  Resource,
+  ResourceFilters,
+  ResourceType,
+  UpdateResourceInput,
+} from '@/lib/api/types';
 
 /** The only place that knows the resource endpoints exist. */
 export const resourcesApi = {
@@ -9,6 +16,14 @@ export const resourcesApi = {
 
   get(id: string): Promise<Resource> {
     return api(`/api/v1/resources/${id}`);
+  },
+
+  create(input: CreateResourceInput): Promise<Resource> {
+    return api('/api/v1/resources', { method: 'POST', body: JSON.stringify(input) });
+  },
+
+  update(id: string, input: UpdateResourceInput): Promise<Resource> {
+    return api(`/api/v1/resources/${id}`, { method: 'PATCH', body: JSON.stringify(input) });
   },
 
   listTypes(): Promise<ResourceType[]> {

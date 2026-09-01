@@ -13,6 +13,9 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import type { Resource } from '@/lib/api/types';
+import { ResourceDialog } from './resource-dialog';
 import { resourcesApi } from '../api/resources.api';
 import { es } from '@/i18n/es';
 import { toUserMessage } from '@/lib/api/errors';
@@ -28,6 +31,9 @@ const COLUMNS = [
 
 export function ResourcesTable() {
   const queryClient = useQueryClient();
+
+  // undefined = closed. null = creating. A resource = editing that one.
+  const [editing, setEditing] = useState<Resource | null | undefined>(undefined);
 
   const { data, isPending, error } = useQuery({
     queryKey: ['resources', 'list'],
@@ -57,6 +63,9 @@ export function ResourcesTable() {
             ? es.common.loading
             : `${data?.meta.total ?? 0} ${es.resources.title.toLowerCase()}`}
         </Typography>
+        <Button variant="contained" onClick={() => setEditing(null)}>
+          {es.resources.newResource}
+        </Button>
       </Box>
 
       <Paper elevation={1}>
@@ -117,6 +126,9 @@ export function ResourcesTable() {
                   />
                 </TableCell>
                 <TableCell align="right">
+                  <Button size="small" onClick={() => setEditing(resource)}>
+                    {es.resources.edit}
+                  </Button>
                   <Button
                     size="small"
                     disabled={toggle.isPending}
@@ -132,6 +144,12 @@ export function ResourcesTable() {
       </Paper>
 
       {toggle.error && <Alert severity="error">{toUserMessage(toggle.error)}</Alert>}
+
+      <ResourceDialog
+        open={editing !== undefined}
+        resource={editing ?? undefined}
+        onClose={() => setEditing(undefined)}
+      />
 
       <Typography sx={{ fontFamily: monoFontFamily, fontSize: 12, color: 'text.secondary' }}>
         GET /api/v1/resources · DELETE /api/v1/resources/:id (baja lógica) · POST
