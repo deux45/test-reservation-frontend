@@ -12,11 +12,9 @@ import TextField from '@mui/material/TextField';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { es } from '@/i18n/es';
-import { ApiError } from '@/lib/api/client';
 import { toUserMessage } from '@/lib/api/errors';
 import type { Resource } from '@/lib/api/types';
 import { resourcesApi } from '../api/resources.api';
-import { AttributesFields } from './attributes-fields';
 
 interface Props {
   open: boolean;
@@ -41,7 +39,6 @@ export function ResourceDialog({ open, onClose, resource }: Props) {
 
   const [typeId, setTypeId] = useState('');
   const [fields, setFields] = useState(EMPTY);
-  const [attributes, setAttributes] = useState<Record<string, unknown>>({});
 
   const { data: types } = useQuery({
     queryKey: ['resource-types'],
@@ -55,7 +52,6 @@ export function ResourceDialog({ open, onClose, resource }: Props) {
     if (!open) return;
 
     setTypeId(resource?.resourceType?.id ?? '');
-    setAttributes(resource?.attributes ?? {});
     setFields(
       resource
         ? {
@@ -68,20 +64,16 @@ export function ResourceDialog({ open, onClose, resource }: Props) {
     );
   }, [open, resource]);
 
-  const selectedType = types?.find((type) => type.id === typeId);
-
   const save = useMutation({
     mutationFn: () => {
       const payload = {
         name: fields.name,
         description: fields.description || undefined,
         location: fields.location || undefined,
-        attributes,
       };
 
       // code and resourceTypeId are omitted when editing: the API rejects
-      // them, because changing either would invalidate the attributes already
-      // stored against the type's schema.
+      // both, because they identify the resource rather than describe it.
       return isEdit
         ? resourcesApi.update(resource!.id, payload)
         : resourcesApi.create({ ...payload, code: fields.code, resourceTypeId: typeId });
@@ -91,13 +83,6 @@ export function ResourceDialog({ open, onClose, resource }: Props) {
       onClose();
     },
   });
-
-  // The server validates attributes with ajv and returns every violation.
-  // Rendering them beside the fields beats one opaque sentence at the top.
-  const violations =
-    save.error instanceof ApiError
-      ? ((save.error.problem as { violations?: string[] }).violations ?? undefined)
-      : undefined;
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
@@ -110,13 +95,10 @@ export function ResourceDialog({ open, onClose, resource }: Props) {
             size="small"
             label={es.resources.type}
             value={typeId}
-            // Immutable after creation: the type decides which attribute
-            // schema applies, so changing it would orphan the stored values.
+            // Immutable after creation: the type is part of what the
+            // resource is, not a property of it.
             disabled={isEdit}
-            onChange={(event) => {
-              setTypeId(event.target.value);
-              setAttributes({});
-            }}
+            onChange={(event) => setTypeId(event.target.value)}
           >
             {types?.map((type) => (
               <MenuItem key={type.id} value={type.id}>
@@ -148,16 +130,7 @@ export function ResourceDialog({ open, onClose, resource }: Props) {
             onChange={(event) => setFields({ ...fields, location: event.target.value })}
           />
 
-          {selectedType && (
-            <AttributesFields
-              schema={selectedType.attributesSchema}
-              values={attributes}
-              onChange={setAttributes}
-              errors={violations}
-            />
-          )}
-
-          {save.error && !violations && <Alert severity="error">{toUserMessage(save.error)}</Alert>}
+          {save.error && <Alert severity="error">{toUserMessage(save.error)}</Alert>}
         </Box>
       </DialogContent>
 

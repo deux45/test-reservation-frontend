@@ -23,7 +23,6 @@ export interface ResourceType {
   code: string;
   name: string;
   description: string | null;
-  attributesSchema: Record<string, unknown>;
   isActive: boolean;
 }
 
@@ -36,7 +35,6 @@ export interface Resource {
   location: string | null;
   /** IANA zone. Times are rendered in this zone, not the browser's. */
   timeZone: string;
-  attributes: Record<string, unknown>;
   isActive: boolean;
   resourceType?: ResourceType;
   createdAt: string;
@@ -71,7 +69,6 @@ export interface CreateResourceInput {
   capacity?: number;
   location?: string;
   timeZone?: string;
-  attributes?: Record<string, unknown>;
 }
 
 /** code and resourceTypeId are absent on purpose: the API refuses to change
