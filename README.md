@@ -27,11 +27,11 @@ It checks whether the API is up and starts it if it is not — building its
 database and loading its demo data — before bringing up the interface. One
 command from nothing.
 
-|         | URL                          |
-| ------- | ---------------------------- |
-| Web     | http://localhost:3001        |
-| API     | http://localhost:3000/api/v1 |
-| Swagger | http://localhost:3000/docs   |
+|         | URL                            |
+| ------- | ------------------------------ |
+| Web     | http://localhost:3001          |
+| API     | http://localhost:3000/api/v1   |
+| Swagger | http://localhost:3000/api/docs |
 
 Sign in with `admin@reservas.dev` / `Reservas2026!`. There are two non-admin
 accounts, `carlos@reservas.dev` and `marta@reservas.dev`, with the same

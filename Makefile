@@ -41,7 +41,7 @@ start: api-up up ## Arranque completo: API (si hace falta) e interfaz
 	@echo ""
 	@echo "  Web      http://localhost:3001"
 	@echo "  API      http://localhost:3000"
-	@echo "  Swagger  http://localhost:3000/docs"
+	@echo "  Swagger  http://localhost:3000/api/docs"
 	@echo ""
 	@echo "  Entra con admin@reservas.dev / Reservas2026!"
 
