@@ -13,6 +13,12 @@ services:
     volumes:
       - ./src:/app/src
       - ./public:/app/public
+      # Tests and their config are excluded from the image by .dockerignore --
+      # correctly, a production image has no business shipping them. They are
+      # bind-mounted here instead so `make test` can run inside the container
+      # without putting them back in the build context.
+      - ./test:/app/test
+      - ./vitest.config.ts:/app/vitest.config.ts:ro
       - /app/node_modules
       - /app/.next
 
