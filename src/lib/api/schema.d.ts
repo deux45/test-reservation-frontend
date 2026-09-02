@@ -11,7 +11,7 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Usuario de la sesión actual */
+    /** The current session user */
     get: operations['AuthController_me'];
     put?: never;
     post?: never;
@@ -28,12 +28,12 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Lista recursos con filtros y paginación */
+    /** List resources with filters and pagination */
     get: operations['ResourcesController_findAll'];
     put?: never;
     /**
-     * Crea un recurso
-     * @description Alta de un recurso reservable dentro de un tipo existente.
+     * Create a resource
+     * @description Registers a bookable resource under an existing type.
      */
     post: operations['ResourcesController_create'];
     delete?: never;
@@ -49,20 +49,20 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Detalle de un recurso, con su tipo y horario semanal */
+    /** Get one resource, with its type and weekly schedule */
     get: operations['ResourcesController_findOne'];
     put?: never;
     post?: never;
     /**
-     * Da de baja un recurso
-     * @description Baja lógica. El recurso deja de poder reservarse pero su histórico de reservas se conserva intacto, que es la razón de no borrarlo.
+     * Deactivate a resource
+     * @description A soft delete. The resource can no longer be booked, but its reservation history is kept intact -- which is the reason it is not deleted.
      */
     delete: operations['ResourcesController_deactivate'];
     options?: never;
     head?: never;
     /**
-     * Actualiza un recurso
-     * @description code y resourceTypeId no son editables: ambos identifican al recurso.
+     * Update a resource
+     * @description code and resourceTypeId are not editable: both identify the resource.
      */
     patch: operations['ResourcesController_update'];
     trace?: never;
@@ -76,7 +76,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Reactiva un recurso dado de baja */
+    /** Reactivate a deactivated resource */
     post: operations['ResourcesController_activate'];
     delete?: never;
     options?: never;
@@ -92,14 +92,14 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * Lista los tipos de recurso
-     * @description Familias de recursos reservables: salas, portátiles, vehículos.
+     * List resource types
+     * @description Families of bookable resources: rooms, laptops, vehicles.
      */
     get: operations['ResourceTypesController_findAll'];
     put?: never;
     /**
-     * Crea un tipo de recurso
-     * @description Dar de alta una familia nueva (vehículo, proyector) es esta llamada, no un despliegue.
+     * Create a resource type
+     * @description Registering a new family (vehicle, projector) is this call, not a deployment.
      */
     post: operations['ResourceTypesController_create'];
     delete?: never;
@@ -115,7 +115,7 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Detalle de un tipo de recurso */
+    /** Get one resource type */
     get: operations['ResourceTypesController_findOne'];
     put?: never;
     post?: never;
@@ -133,14 +133,14 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * Lista reservas con filtros y paginación
-     * @description Sin rol admin solo se devuelven las propias, ignorando el parámetro userId. El rango devuelve las reservas que **se solapan** con él.
+     * List reservations with filters and pagination
+     * @description Without the admin role only your own are returned, and the userId parameter is ignored. The range returns reservations that **overlap** it.
      */
     get: operations['ReservationsController_findAll'];
     put?: never;
     /**
-     * Crea una reserva
-     * @description Aplica todas las reglas de negocio y garantiza que no haya solapes. Los intervalos son semiabiertos `[inicio, fin)`: una reserva que termina a las 11:00 no choca con otra que empieza a las 11:00.
+     * Create a reservation
+     * @description Applies every business rule and guarantees there is no overlap. Intervals are half-open `[start, end)`: a reservation ending at 11:00 does not clash with one starting at 11:00.
      */
     post: operations['ReservationsController_create'];
     delete?: never;
@@ -156,7 +156,7 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Detalle de una reserva */
+    /** Get one reservation */
     get: operations['ReservationsController_findOne'];
     put?: never;
     post?: never;
@@ -164,8 +164,8 @@ export interface paths {
     options?: never;
     head?: never;
     /**
-     * Reprograma una reserva
-     * @description Reejecuta todas las reglas excluyéndose a sí misma, para que no colisione con su propio hueco actual.
+     * Reschedule a reservation
+     * @description Re-runs every rule while excluding this reservation, so that it does not collide with the slot it currently occupies.
      */
     patch: operations['ReservationsController_reschedule'];
     trace?: never;
@@ -180,8 +180,8 @@ export interface paths {
     get?: never;
     put?: never;
     /**
-     * Cancela una reserva
-     * @description Idempotente: cancelar una reserva ya cancelada devuelve 200. El hueco queda libre de inmediato, porque la constraint solo indexa CONFIRMED.
+     * Cancel a reservation
+     * @description Idempotent: cancelling an already cancelled reservation returns 200. The slot is freed immediately, because the constraint only indexes CONFIRMED rows.
      */
     post: operations['ReservationsController_cancel'];
     delete?: never;
@@ -198,10 +198,10 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * Huecos libres de un recurso en un rango
-     * @description Parte del horario operativo del recurso y le resta bloqueos y reservas confirmadas. Los huecos son semiabiertos `[inicio, fin)`, igual que las reservas: uno que termina a las 11:00 deja las 11:00 libres.
+     * Free slots for a resource within a range
+     * @description Starts from the resource's operating hours and subtracts maintenance blocks and confirmed reservations. Slots are half-open `[start, end)`, exactly like reservations: one ending at 11:00 leaves 11:00 free.
      *
-     *     Un recurso sin horario configurado está disponible las 24 horas.
+     *     A resource with no schedule configured is available around the clock.
      */
     get: operations['AvailabilityController_findSlots'];
     put?: never;
@@ -220,14 +220,14 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * Lista los usuarios
-     * @description Incluye cuántas reservas futuras confirmadas tiene cada uno, para que el impacto de bloquear o degradar sea visible antes de hacerlo.
+     * List users
+     * @description Includes how many confirmed future reservations each one has, so the impact of banning or demoting is visible before doing it.
      */
     get: operations['UsersController_findAll'];
     put?: never;
     /**
-     * Crea una cuenta
-     * @description Alta por parte de un administrador, sin pasar por el registro público. La delega en el proveedor de identidad, que es quien sabe cifrar la contraseña. Un proveedor que no pueda crear cuentas responde 501.
+     * Create an account
+     * @description Created by an administrator, bypassing public sign-up. Delegated to the identity provider, which is what knows how to hash the password. A provider that cannot create accounts answers 501.
      */
     post: operations['UsersController_create'];
     delete?: never;
@@ -250,8 +250,8 @@ export interface paths {
     options?: never;
     head?: never;
     /**
-     * Edita nombre y correo
-     * @description El correo es la credencial con la que esa persona inicia sesión, así que cambiarlo cambia cómo entra. El rol se cambia por su propia ruta, porque tiene su propia regla: nadie puede degradarse a sí mismo.
+     * Edit name and email
+     * @description The email is the credential this person signs in with, so changing it changes how they get in. The role is changed through its own route, because it has its own rule: nobody can demote themselves.
      */
     patch: operations['UsersController_update'];
     trace?: never;
@@ -270,8 +270,8 @@ export interface paths {
     options?: never;
     head?: never;
     /**
-     * Cambia el rol de un usuario
-     * @description Un administrador no puede quitarse el rol a sí mismo: sería la forma más rápida de dejar el sistema sin nadie que pueda administrarlo.
+     * Change a user's role
+     * @description An administrator cannot remove their own role: it would be the quickest way to leave the system with nobody able to administer it.
      */
     patch: operations['UsersController_updateRole'];
     trace?: never;
@@ -286,11 +286,11 @@ export interface paths {
     get?: never;
     put?: never;
     /**
-     * Bloquea a un usuario
-     * @description Surte efecto de inmediato: el adaptador rechaza al usuario bloqueado en cada petición, no solo al iniciar sesión, y además se revocan sus sesiones abiertas. Sin `days` el bloqueo es indefinido.
+     * Ban a user
+     * @description Takes effect immediately: the adapter rejects a banned user on every request, not only at sign-in, and their open sessions are revoked. Without `days` the ban is indefinite.
      */
     post: operations['UsersController_ban'];
-    /** Desbloquea a un usuario */
+    /** Unban a user */
     delete: operations['UsersController_unban'];
     options?: never;
     head?: never;
@@ -304,7 +304,7 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Estado del servicio y de sus dependencias */
+    /** Service health and that of its dependencies */
     get: operations['HealthController_check'];
     put?: never;
     post?: never;
@@ -373,87 +373,87 @@ export interface components {
     CreateResourceDto: {
       description?: string;
       /**
-       * @description Aforo máximo. Se contrasta con los asistentes de cada reserva.
+       * @description Maximum capacity. Checked against each reservation's attendees.
        * @example 12
        */
       capacity?: number;
       /** @example Planta 2 */
       location?: string;
       /**
-       * @description Zona IANA, por ejemplo Europe/Madrid.
+       * @description IANA zone, for example Europe/Madrid.
        *
-       *     El horario operativo se interpreta en esta zona; los instantes se guardan
-       *     siempre en UTC.
+       *     Operating hours are interpreted in this zone; instants are always stored
+       *     in UTC.
        * @default UTC
        * @example Europe/Madrid
        */
       timeZone: string;
       /**
        * Format: uuid
-       * @description Tipo al que pertenece. Determina qué atributos son válidos.
+       * @description The type it belongs to.
        */
       resourceTypeId: string;
-      /** @description Código único y estable. Minúsculas, números y guiones. */
+      /** @description Unique, stable code. Lowercase letters, digits and hyphens. */
       code: string;
-      /** @description Nombre visible. */
+      /** @description Display name. */
       name: string;
     };
     UpdateResourceDto: {
       description?: string;
       /**
-       * @description Aforo máximo. Se contrasta con los asistentes de cada reserva.
+       * @description Maximum capacity. Checked against each reservation's attendees.
        * @example 12
        */
       capacity?: number;
       /** @example Planta 2 */
       location?: string;
       /**
-       * @description Zona IANA, por ejemplo Europe/Madrid.
+       * @description IANA zone, for example Europe/Madrid.
        *
-       *     El horario operativo se interpreta en esta zona; los instantes se guardan
-       *     siempre en UTC.
+       *     Operating hours are interpreted in this zone; instants are always stored
+       *     in UTC.
        * @default UTC
        * @example Europe/Madrid
        */
       timeZone: string;
-      /** @description Nombre visible. */
+      /** @description Display name. */
       name?: string;
     };
     CreateResourceTypeDto: {
       description?: string;
-      /** @description Código único y estable. Minúsculas, números y guiones. */
+      /** @description Unique, stable code. Lowercase letters, digits and hyphens. */
       code: string;
-      /** @description Nombre visible del tipo. */
+      /** @description Display name of the type. */
       name: string;
     };
     CreateReservationDto: {
       /**
-       * @description Inicio en UTC, ISO 8601. **Inclusivo.**
+       * @description Start in UTC, ISO 8601. **Inclusive.**
        *
-       *     Debe caer en un múltiplo de 15 minutos.
+       *     Must fall on a multiple of 15 minutes.
        * @example 2026-09-15T10:00:00Z
        */
       startAt: string;
       /**
-       * @description Fin en UTC, ISO 8601. **Exclusivo.**
+       * @description End in UTC, ISO 8601. **Exclusive.**
        *
-       *     Una reserva que termina a las 11:00 no colisiona con otra que empieza a
-       *     las 11:00: los intervalos son semiabiertos `[inicio, fin)`.
+       *     A reservation ending at 11:00 does not collide with one starting at
+       *     11:00: intervals are half-open `[start, end)`.
        * @example 2026-09-15T11:00:00Z
        */
       endAt: string;
       /**
-       * @description Asistentes previstos. Se contrasta con el aforo del recurso.
+       * @description Expected attendees. Checked against the resource's capacity.
        * @example 8
        */
       attendees?: number;
       notes?: string;
       /**
        * Format: uuid
-       * @description Recurso a reservar.
+       * @description The resource to book.
        */
       resourceId: string;
-      /** @description Título visible en la agenda. */
+      /** @description Title shown in the schedule. */
       title: string;
     };
     ReservationDto: {
@@ -461,12 +461,12 @@ export interface components {
       title: string;
       /**
        * Format: date-time
-       * @description Inicio en UTC. Inclusivo.
+       * @description Start in UTC. Inclusive.
        */
       startAt: string;
       /**
        * Format: date-time
-       * @description Fin en UTC. **Exclusivo.**
+       * @description End in UTC. **Exclusive.**
        */
       endAt: string;
       /** @enum {string} */
@@ -484,29 +484,29 @@ export interface components {
     };
     CancelReservationDto: {
       /**
-       * @description Motivo de la cancelación. Queda registrado.
-       * @example Se pospone la reunión
+       * @description Reason for the cancellation. It is recorded.
+       * @example The meeting is postponed
        */
       reason?: string;
     };
     AvailabilitySlotDto: {
       /**
        * Format: date-time
-       * @description Inicio del hueco, UTC. Inclusivo.
+       * @description Start of the slot, UTC. Inclusive.
        */
       startAt: string;
       /**
        * Format: date-time
-       * @description Fin del hueco, UTC. **Exclusivo.**
+       * @description End of the slot, UTC. **Exclusive.**
        */
       endAt: string;
       /** @example 60 */
       durationMinutes: number;
       /**
-       * @description Zona en la que el cliente debe pintar el hueco.
+       * @description The zone the client should render the slot in.
        *
-       *     Va en cada slot para que el cliente no tenga que cruzarlo con el recurso
-       *     en una segunda petición solo para saber cómo mostrarlo.
+       *     Carried on every slot so the client does not have to cross-reference the
+       *     resource in a second request just to know how to display it.
        * @example Europe/Madrid
        */
       timeZone: string;
@@ -528,51 +528,51 @@ export interface components {
       createdAt: string;
     };
     CreateUserDto: {
-      /** @description Mínimo 10 caracteres, igual que en el registro público. */
+      /** @description At least 10 characters, the same as public sign-up. */
       password: string;
       /**
-       * @description Por defecto `user`.
+       * @description Defaults to `user`.
        * @default user
        * @enum {string}
        */
       role: 'admin' | 'user';
       /**
        * Format: email
-       * @description Correo, único en el sistema.
+       * @description Email, unique across the system.
        */
       email: string;
       name: string;
     };
     UpdateUserDto: {
-      /** @description Nombre visible. */
+      /** @description Display name. */
       name?: string;
       /**
        * Format: email
-       * @description Correo. Debe seguir siendo único.
+       * @description Email. It must remain unique.
        *
-       *     Cambiarlo cambia la credencial con la que esa persona inicia sesión, así
-       *     que la interfaz lo advierte antes de guardar.
+       *     Changing it changes the credential this person signs in with, which is
+       *     why the interface warns before saving.
        */
       email?: string;
     };
     UpdateRoleDto: {
       /**
-       * @description Nuevo rol. Solo `admin` o `user`.
+       * @description The new role. Only `admin` or `user`.
        * @enum {string}
        */
       role: 'admin' | 'user';
     };
     BanUserDto: {
       /**
-       * @description Motivo del bloqueo. Queda registrado.
-       * @example Uso indebido de las salas
+       * @description Reason for the ban. It is recorded.
+       * @example Misuse of the meeting rooms
        */
       reason?: string;
       /**
-       * @description Duración en días. Sin valor, el bloqueo es indefinido.
+       * @description Duration in days. With no value the ban is indefinite.
        *
-       *     Better Auth levanta el bloqueo por sí solo al vencer, así que no hace
-       *     falta ningún proceso programado que lo revise.
+       *     Better Auth lifts the ban itself once it expires, so no scheduled job is
+       *     needed to check for it.
        * @example 30
        */
       days?: number;
@@ -608,9 +608,9 @@ export interface operations {
   ResourcesController_findAll: {
     parameters: {
       query?: {
-        /** @description Página, empezando en 1. */
+        /** @description Page number, starting at 1. */
         page?: number;
-        /** @description Resultados por página. */
+        /** @description Results per page. */
         limit?: number;
         sortOrder?: 'ASC' | 'DESC';
         /**
@@ -619,14 +619,14 @@ export interface operations {
          *     vector that no parameter binding protects against.
          */
         sortBy?: string;
-        /** @description Solo recursos de este tipo. */
+        /** @description Only resources of this type. */
         typeId?: string;
-        /** @description Busca en nombre y código. */
+        /** @description Searches name and code. */
         q?: string;
-        /** @description Aforo mínimo. */
+        /** @description Minimum capacity. */
         minCapacity?: number;
         location?: string;
-        /** @description Por defecto muestra activos e inactivos. */
+        /** @description By default both active and inactive are shown. */
         isActive?: boolean;
       };
       header?: never;
@@ -668,14 +668,14 @@ export interface operations {
           'application/json': components['schemas']['ResourceDto'];
         };
       };
-      /** @description Ya existe un recurso con ese código */
+      /** @description A resource with that code already exists */
       409: {
         headers: {
           [name: string]: unknown;
         };
         content?: never;
       };
-      /** @description La zona horaria no es válida */
+      /** @description The time zone is not valid */
       422: {
         headers: {
           [name: string]: unknown;
@@ -703,7 +703,7 @@ export interface operations {
           'application/json': components['schemas']['ResourceDto'];
         };
       };
-      /** @description El recurso no existe */
+      /** @description The resource does not exist */
       404: {
         headers: {
           [name: string]: unknown;
@@ -817,7 +817,7 @@ export interface operations {
           'application/json': components['schemas']['ResourceTypeDto'];
         };
       };
-      /** @description Ya existe un tipo con ese código */
+      /** @description A type with that code already exists */
       409: {
         headers: {
           [name: string]: unknown;
@@ -850,9 +850,9 @@ export interface operations {
   ReservationsController_findAll: {
     parameters: {
       query?: {
-        /** @description Página, empezando en 1. */
+        /** @description Page number, starting at 1. */
         page?: number;
-        /** @description Resultados por página. */
+        /** @description Results per page. */
         limit?: number;
         sortOrder?: 'ASC' | 'DESC';
         /**
@@ -861,18 +861,18 @@ export interface operations {
          *     vector that no parameter binding protects against.
          */
         sortBy?: string;
-        /** @description Filtra por recurso. */
+        /** @description Filter by resource. */
         resourceId?: string;
-        /** @description Filtra por usuario. Sin rol admin se ignora: solo verás las tuyas. */
+        /** @description Filter by user. Ignored without the admin role: you only see your own. */
         userId?: string;
-        /** @description Todas las reservas de una familia de recursos. */
+        /** @description Every reservation for one family of resources. */
         resourceTypeId?: string;
-        /** @description Repetible: `?status=CONFIRMED&status=CANCELLED`. */
+        /** @description Repeatable: `?status=CONFIRMED&status=CANCELLED`. */
         status?: ('CONFIRMED' | 'CANCELLED' | 'COMPLETED')[];
         /**
-         * @description Devuelve las reservas que **se solapan** con el rango, no las contenidas
-         *     en él: preguntar "qué hay reservado esta semana" debe incluir la reunión
-         *     que empezó el viernes y termina el lunes.
+         * @description Returns the reservations that **overlap** the range, not those contained
+         *     within it: asking "what is booked this week" must include the meeting
+         *     that started on Friday and ends on Monday.
          */
         from?: string;
         to?: string;
@@ -900,7 +900,7 @@ export interface operations {
       query?: never;
       header: {
         'idempotency-key': string;
-        /** @description Si se repite la petición con la misma clave se devuelve la reserva ya creada en lugar de crear una segunda. */
+        /** @description Repeating the request with the same key returns the reservation already created instead of creating a second one. */
         'Idempotency-Key'?: string;
       };
       path?: never;
@@ -920,14 +920,14 @@ export interface operations {
           'application/json': components['schemas']['ReservationDto'];
         };
       };
-      /** @description El horario ya está ocupado (`OVERLAPPING_RESERVATION`, con el rango en conflicto), o alguna regla lo impide: fuera de horario, recurso bloqueado o límite de reservas alcanzado. */
+      /** @description The slot is already taken (`OVERLAPPING_RESERVATION`, carrying the conflicting range), or a rule forbids it: outside operating hours, resource blocked, or the active reservation limit reached. */
       409: {
         headers: {
           [name: string]: unknown;
         };
         content?: never;
       };
-      /** @description Rango inválido, en el pasado, o asistentes por encima del aforo. */
+      /** @description Invalid range, a range in the past, or attendees above capacity. */
       422: {
         headers: {
           [name: string]: unknown;
@@ -1010,15 +1010,15 @@ export interface operations {
   AvailabilityController_findSlots: {
     parameters: {
       query: {
-        /** @description Inicio del rango a consultar, UTC ISO 8601. */
+        /** @description Start of the range to query, UTC ISO 8601. */
         from: string;
-        /** @description Fin del rango. Máximo 60 días desde `from`. */
+        /** @description End of the range. At most 60 days from `from`. */
         to: string;
         /**
-         * @description Descarta los huecos más cortos que esto.
+         * @description Discards slots shorter than this.
          *
-         *     Ofrecer un hueco de 15 minutos a quien necesita una hora solo produce un
-         *     intento fallido.
+         *     Offering a 15-minute slot to someone who needs an hour only produces a
+         *     failed attempt.
          */
         minDurationMinutes?: number;
       };
@@ -1038,7 +1038,7 @@ export interface operations {
           'application/json': components['schemas']['AvailabilitySlotDto'][];
         };
       };
-      /** @description Rango inválido o superior a 60 días */
+      /** @description Invalid range, or longer than 60 days */
       422: {
         headers: {
           [name: string]: unknown;
@@ -1050,9 +1050,9 @@ export interface operations {
   UsersController_findAll: {
     parameters: {
       query?: {
-        /** @description Página, empezando en 1. */
+        /** @description Page number, starting at 1. */
         page?: number;
-        /** @description Resultados por página. */
+        /** @description Results per page. */
         limit?: number;
         sortOrder?: 'ASC' | 'DESC';
         /**
@@ -1061,7 +1061,7 @@ export interface operations {
          *     vector that no parameter binding protects against.
          */
         sortBy?: string;
-        /** @description Busca en nombre y correo. */
+        /** @description Searches name and email. */
         q?: string;
       };
       header?: never;
@@ -1103,7 +1103,7 @@ export interface operations {
           'application/json': components['schemas']['UserDto'];
         };
       };
-      /** @description Ya existe una cuenta con ese correo */
+      /** @description An account with that email already exists */
       409: {
         headers: {
           [name: string]: unknown;
@@ -1135,7 +1135,7 @@ export interface operations {
           'application/json': components['schemas']['UserDto'];
         };
       };
-      /** @description El correo ya está en uso por otra cuenta */
+      /** @description The email is already used by another account */
       409: {
         headers: {
           [name: string]: unknown;
@@ -1167,7 +1167,7 @@ export interface operations {
           'application/json': components['schemas']['UserDto'];
         };
       };
-      /** @description Intento de auto-degradación */
+      /** @description Attempted self-demotion */
       409: {
         headers: {
           [name: string]: unknown;
@@ -1199,7 +1199,7 @@ export interface operations {
           'application/json': components['schemas']['UserDto'];
         };
       };
-      /** @description Intento de bloquearse a sí mismo */
+      /** @description Attempted self-ban */
       409: {
         headers: {
           [name: string]: unknown;
