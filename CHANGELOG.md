@@ -11,6 +11,12 @@ and the versioning follows [Semantic Versioning](https://semver.org/).
 >
 > Cutting a release: `npm run release` (or the _Release_ workflow on GitHub).
 
+## [0.3.2](///compare/v0.3.1...v0.3.2) (2026-09-02)
+
+### Bug fixes
+
+- **shell:** correct the Swagger URL and add the generated API schema 6161466
+
 ## [0.3.1](///compare/v0.3.0...v0.3.1) (2026-09-02)
 
 ### Documentation

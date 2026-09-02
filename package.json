@@ -1,6 +1,6 @@
 {
   "name": "reservations-web",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Shared resource booking web client — Next.js + React + MUI",
   "license": "UNLICENSED",
   "private": true,
