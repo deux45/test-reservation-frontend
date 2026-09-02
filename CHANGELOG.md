@@ -11,6 +11,17 @@ y el versionado sigue [Semantic Versioning](https://semver.org/lang/es/).
 >
 > Cortar una versión: `npm run release` (o el workflow _Release_ en GitHub).
 
+## [0.3.0](///compare/v0.2.0...v0.3.0) (2026-09-02)
+
+### Funcionalidades
+
+- **shell:** add a Makefile and mount the test directory 7391368
+
+### Documentación
+
+- add the README 5029466
+- correct the testing section, the e2e suite is not written yet d2b66cd
+
 ## [0.2.0](///compare/v0.1.0...v0.2.0) (2026-09-01)
 
 ### Funcionalidades
