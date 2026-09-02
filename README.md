@@ -1,177 +1,182 @@
 # Reservations web
 
-Interfaz de gestión de recursos compartidos: recursos, reservas y usuarios.
+The management interface for shared resources: resources, reservations and
+users.
 
-Es un cliente de la [Reservations API](../test-reservation-backend). Toda la
-lógica de negocio vive allí; aquí lo que se resuelve es que reservar sea rápido
-y que los errores sean comprensibles.
+It is a client of the [Reservations API](../test-reservation-backend). All the
+business logic lives there; what is solved here is making a booking quick and
+making the errors comprehensible.
 
 - **Stack**: Next.js 16 (App Router) · React 19 · MUI 9 · TanStack Query 5 · TypeScript
-- **Autenticación**: Better Auth, cookie de sesión firmada
+- **Authentication**: Better Auth, signed session cookie
+- **Interface language**: Spanish. The code is in English; everything the user
+  reads is in Spanish, and all of it lives in `src/i18n/es.ts`.
 
 ---
 
-## Arranque
+## Getting started
 
-Sólo hace falta Docker, y el repositorio de la API clonado al lado.
+Docker is the only requirement, plus the API repository cloned alongside this
+one.
 
 ```bash
 make start
 ```
 
-Comprueba si la API está levantada y la arranca si no lo está —construyendo su
-base de datos y cargando sus datos de demostración— antes de levantar la
-interfaz. Un solo comando desde cero.
+It checks whether the API is up and starts it if it is not — building its
+database and loading its demo data — before bringing up the interface. One
+command from nothing.
 
-|          | URL                          |
-| -------- | ---------------------------- |
-| Interfaz | http://localhost:3001        |
-| API      | http://localhost:3000/api/v1 |
-| Swagger  | http://localhost:3000/docs   |
+|         | URL                          |
+| ------- | ---------------------------- |
+| Web     | http://localhost:3001        |
+| API     | http://localhost:3000/api/v1 |
+| Swagger | http://localhost:3000/docs   |
 
-Entra con `admin@reservas.dev` / `Reservas2026!`. Hay dos cuentas sin permisos
-de administración, `carlos@reservas.dev` y `marta@reservas.dev`, con la misma
-contraseña, para ver la diferencia de permisos.
+Sign in with `admin@reservas.dev` / `Reservas2026!`. There are two non-admin
+accounts, `carlos@reservas.dev` and `marta@reservas.dev`, with the same
+password, to see the difference in permissions.
 
-Si el backend está en otra ruta:
+If the backend lives somewhere else:
 
 ```bash
-make start API_DIR=/ruta/a/test-reservation-backend
+make start API_DIR=/path/to/test-reservation-backend
 ```
 
-### Si no tienes `make`
+### Without `make`
 
-Arranca primero la API (crea la red Docker que este compose usa) y luego:
+Start the API first — it creates the Docker network this compose file joins —
+and then:
 
 ```bash
 docker compose up -d --build
 ```
 
-En Windows, `make` se instala con `winget install GnuWin32.Make`, con Chocolatey
-(`choco install make`) o usando WSL.
+On Windows, `make` installs with `winget install GnuWin32.Make`, with Chocolatey
+(`choco install make`), or from WSL.
 
 ---
 
-## Comandos
+## Commands
 
-`make` sin argumentos lista todo. Los habituales:
+`make` with no arguments lists everything. The usual ones:
 
-| Comando          | Qué hace                                        |
-| ---------------- | ----------------------------------------------- |
-| `make start`     | Arranque completo, API incluida                 |
-| `make logs`      | Sigue los logs                                  |
-| `make test`      | Tests unitarios y de componentes                |
-| `make check`     | Lo mismo que valida CI: tipos, lint y tests     |
-| `make api-types` | Regenera los tipos desde el OpenAPI del backend |
-
----
-
-## Pantallas
-
-**Login** — correo y contraseña. La sesión viaja en una cookie firmada y
-`httpOnly`, no en un token en `localStorage`: un XSS no puede leerla. El rol
-llega en la propia sesión, así que la interfaz no decide quién es administrador,
-sólo lo refleja.
-
-**Recursos** — listado con alta, edición, baja lógica y reactivación. Un recurso
-dado de baja se sigue viendo, marcado: no se borra nada que tenga historial.
-
-**Reservas** — listado con filtros por recurso, estado y rango de fechas, más
-paginación. Desde aquí se crea una reserva nueva y se cancela una existente.
-
-**Usuarios** — sólo para administradores: alta con confirmación de contraseña,
-edición, cambio de rol y bloqueo.
+| Command          | What it does                                             |
+| ---------------- | -------------------------------------------------------- |
+| `make start`     | Full bootstrap, API included                             |
+| `make logs`      | Follow the logs                                          |
+| `make test`      | Unit and component tests                                 |
+| `make check`     | What CI validates: types, lint and tests                 |
+| `make api-types` | Regenerate the types from the backend's OpenAPI document |
 
 ---
 
-## El diálogo de reserva
+## Screens
 
-Es la pantalla donde se concentran las decisiones interesantes, porque es donde
-el usuario se topa con la regla de no solapamiento.
+**Login** — email and password. The session travels in a signed, `httpOnly`
+cookie rather than a token in `localStorage`, so an XSS cannot read it. The role
+arrives in the session itself, which means the interface does not decide who is
+an administrator, it only reflects it.
 
-**Los huecos libres se ofrecen, no se adivinan.** Al elegir recurso y día, la
-interfaz consulta `GET /resources/:id/availability` y muestra las franjas libres
-como fichas pulsables. Escribir una hora a ciegas y que te digan que está
-ocupada es una mala forma de reservar.
+**Resources** — list with create, edit, deactivate and reactivate. A deactivated
+resource is still shown, marked as such: nothing with history is deleted.
 
-**El 409 sigue existiendo, y está bien que exista.** Entre la consulta y el
-envío alguien puede reservar la misma franja; para eso está la restricción en la
-base de datos. Lo que cambia es que deja de ser la forma normal de descubrir que
-algo está ocupado y pasa a ser la carrera excepcional que debería ser. Cuando
-ocurre, el diálogo no se cierra: muestra qué franja choca y refresca los huecos,
-así que las alternativas están al lado del error.
+**Reservations** — list with filters by resource, status and date range, plus
+pagination. New bookings are created and existing ones cancelled from here.
 
-**Cada apertura del diálogo genera un `Idempotency-Key`.** Uno por apertura, no
-por intento, que es lo que convierte un doble clic en un reintento seguro en vez
-de en dos reservas.
-
-**Las horas son las del recurso, no las del navegador.** Una sala de Madrid
-reservada desde Bogotá sigue significando las 10:00 en Madrid. La conversión
-está aislada en `wallClockToUtc()` y es lo único que se prueba con nueve tests,
-porque es donde este tipo de error se cuela sin que nadie lo note.
+**Users** — administrators only: creation with password confirmation, editing,
+role changes and banning.
 
 ---
 
-## Estructura
+## The booking dialog
+
+This is where the interesting decisions concentrate, because it is where the
+user meets the no-overlap rule.
+
+**Free slots are offered, not guessed.** Once a resource and a day are chosen,
+the interface queries `GET /resources/:id/availability` and shows the free
+ranges as clickable chips. Typing a time blind and being told it is taken is a
+bad way to book a room.
+
+**The 409 still exists, and should.** Between the query and the submit someone
+else can take the same slot; that is what the database constraint is for. What
+changes is that it stops being the normal way to discover a slot is taken and
+becomes the rare race it should be. When it happens the dialog stays open: it
+shows which range clashes and refetches the slots, so the alternatives sit next
+to the error.
+
+**Each opening of the dialog generates an `Idempotency-Key`.** One per opening,
+not per attempt, which is what turns a double click into a safe retry rather
+than two bookings.
+
+**The hours are the resource's, not the browser's.** A Madrid room booked from
+Bogotá still means 10:00 in Madrid. The conversion is isolated in
+`wallClockToUtc()`, and it is the one thing covered by nine tests, because it is
+where this kind of bug slips through unnoticed.
+
+---
+
+## Structure
 
 ```
 src/
-├── app/                     Rutas del App Router
-│   ├── (public)/login/      Sin sesión
-│   └── (dashboard)/         Con sesión: resources, reservations, users
-├── features/                Un directorio por área funcional
+├── app/                     App Router routes
+│   ├── (public)/login/      No session
+│   └── (dashboard)/         With session: resources, reservations, users
+├── features/                One directory per functional area
 │   ├── auth/components/
 │   ├── reservations/
-│   │   ├── api/             Llamadas HTTP de esta área
+│   │   ├── api/             HTTP calls for this area
 │   │   └── components/      booking-dialog, free-slots, reservations-table
 │   ├── resources/
 │   ├── users/
-│   └── shell/components/    Barra lateral, cabecera, pie de usuario
+│   └── shell/components/    Sidebar, header, user footer
 ├── lib/
 │   ├── api/                 client, errors, types
 │   ├── auth-client.ts
-│   └── dates.ts             Conversión de hora local a instante UTC
-├── i18n/es.ts               Todo el texto visible, en un sitio
-├── theme/                   Tema MUI y fuentes
-└── middleware.ts            Protección de rutas
+│   └── dates.ts             Wall-clock to UTC instant conversion
+├── i18n/es.ts               Every visible string, in one place
+├── theme/                   MUI theme and fonts
+└── middleware.ts            Route protection
 ```
 
-Dos convenciones que sostienen el resto:
+Two conventions hold up the rest:
 
-**Las llamadas HTTP viven en `features/*/api`, nunca en un componente.** Un
-componente que hace `fetch` es un componente que no se puede probar sin una red.
+**HTTP calls live in `features/*/api`, never in a component.** A component that
+calls `fetch` is a component that cannot be tested without a network.
 
-**Todo el texto visible está en `i18n/es.ts`.** El código está en inglés; lo que
-lee el usuario, en español. Una cadena suelta en un componente es una cadena que
-nadie encuentra cuando hay que cambiarla.
-
----
-
-## Datos del servidor
-
-TanStack Query gestiona todo lo que viene de la API. No hay estado global de
-servidor duplicado en React: la caché de Query _es_ ese estado.
-
-Las claves siguen la forma `['recurso', ...parámetros]`, por ejemplo
-`['availability', resourceId, date]`. Incluir los parámetros en la clave es lo
-que hace que volver a un día ya consultado se pinte desde caché en vez de
-repetir la petición, y lo que permite invalidar con precisión: al crear una
-reserva se invalidan `['reservations']` y `['availability']`, y sólo eso.
+**Every visible string lives in `i18n/es.ts`.** The code is in English; what the
+user reads is in Spanish. A loose string inside a component is a string nobody
+finds when it has to change.
 
 ---
 
-## Tipos de la API
+## Server state
 
-Los tipos de las respuestas no se escriben a mano: se generan desde el
-documento OpenAPI que publica el backend.
+TanStack Query owns everything that comes from the API. There is no duplicate
+global server state in React: the Query cache _is_ that state.
+
+Keys follow the shape `['resource', ...parameters]`, for example
+`['availability', resourceId, date]`. Putting the parameters in the key is what
+makes returning to an already-viewed day render from cache instead of refetching,
+and what allows precise invalidation: creating a reservation invalidates
+`['reservations']` and `['availability']`, and nothing else.
+
+---
+
+## API types
+
+Response types are not written by hand: they are generated from the OpenAPI
+document the backend publishes.
 
 ```bash
 make api-types
 ```
 
-Un cambio en un DTO del servidor se convierte en un error de compilación aquí,
-en vez de en un `undefined` en tiempo de ejecución. Es la diferencia entre
-enterarse al compilar y enterarse en producción.
+A change to a server DTO becomes a compile error here rather than an `undefined`
+at runtime. That is the difference between finding out at build time and finding
+out in production.
 
 ---
 
@@ -179,36 +184,35 @@ enterarse al compilar y enterarse en producción.
 
 ```bash
 make test    # Vitest
-make check   # tipos + lint + tests, lo mismo que CI
+make check   # types + lint + tests, the same as CI
 ```
 
-Playwright está instalado y `make e2e` existe, pero **la suite end-to-end aún
-no está escrita**: hoy ese comando no ejecuta ningún test.
+Playwright is installed and `make e2e` exists, but **the end-to-end suite is not
+written yet**: today that command runs no tests.
 
-Los tests unitarios se centran en la lógica que puede fallar en silencio: la
-conversión de zonas horarias, el formateo de rangos y el tratamiento de errores
-de la API. Renderizar un botón y comprobar que pone «Guardar» no prueba nada que
-el compilador no supiera ya.
-
----
-
-## Cadena de suministro
-
-Las mismas medidas que en el backend, por las mismas razones:
-
-- `ignore-scripts=true` y `min-release-age=7` en `.npmrc`
-- Versiones exactas, sin `^` ni `~`, y `npm ci` en todas partes
-- `make audit` para vulnerabilidades conocidas y firmas del registro
-- Acciones de GitHub fijadas por SHA
-- Imagen de producción multi-etapa, con la salida `standalone` de Next y
-  ejecutando como usuario sin privilegios
+The unit tests focus on the logic that can fail silently: time zone conversion,
+range formatting and API error handling. Rendering a button and asserting it
+says "Guardar" proves nothing the compiler did not already know.
 
 ---
 
-## Versionado
+## Supply chain
 
-Commits convencionales validados por commitlint y `CHANGELOG.md` generado a
-partir de ellos:
+The same measures as the backend, for the same reasons:
+
+- `ignore-scripts=true` and `min-release-age=7` in `.npmrc`
+- Exact versions, no `^` or `~`, and `npm ci` everywhere
+- `make audit` for known vulnerabilities and registry signatures
+- GitHub Actions pinned by SHA
+- Multi-stage production image using Next's `standalone` output, running as an
+  unprivileged user
+
+---
+
+## Versioning
+
+Conventional commits validated by commitlint, with `CHANGELOG.md` generated from
+them:
 
 ```bash
 make release
