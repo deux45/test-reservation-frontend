@@ -179,9 +179,11 @@ enterarse al compilar y enterarse en producción.
 
 ```bash
 make test    # Vitest
-make e2e     # Playwright contra la pila levantada
 make check   # tipos + lint + tests, lo mismo que CI
 ```
+
+Playwright está instalado y `make e2e` existe, pero **la suite end-to-end aún
+no está escrita**: hoy ese comando no ejecuta ningún test.
 
 Los tests unitarios se centran en la lógica que puede fallar en silencio: la
 conversión de zonas horarias, el formateo de rangos y el tratamiento de errores
